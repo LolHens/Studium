@@ -80,7 +80,7 @@ void feld_wenden(char a[], unsigned int n) {
  */
 void feld_links_rotieren(char a[], unsigned int n, unsigned int shift) {
     if (shift == 0) return; // Performanceoptimierung
-    shift %= n; // Wenn 'shift' größer als 'n' ist, dann modulo 'n'
+    if (shift >= n) shift %= n; // Wenn 'shift' größer als 'n' ist, dann modulo 'n'
 
     feld_wenden(a, shift);
     feld_wenden(a, n);
@@ -95,7 +95,7 @@ void feld_links_rotieren(char a[], unsigned int n, unsigned int shift) {
  */
 void feld_rechts_rotieren(char a[], unsigned int n, unsigned int shift) {
     if (shift == 0) return; // Performanceoptimierung
-    shift %= n; // Wenn 'shift' größer als 'n' ist, dann modulo 'n'
+    if (shift >= n) shift %= n; // Wenn 'shift' größer als 'n' ist, dann modulo 'n'
 
     feld_wenden(a, n - shift);
     feld_wenden(a, n);
