@@ -77,6 +77,7 @@ void aufgabe_3_2() {
     ifs.open(dateiname); // Datei öffnen
     if (!ifs) { // Prüfung ob Datei geöffnet werden konnte
         cerr << endl << "ERROR: Datei konnte nicht geöffnet werden" << endl;
+        exit(1);
     }
 
     double wert;

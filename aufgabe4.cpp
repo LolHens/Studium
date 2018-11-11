@@ -109,6 +109,7 @@ void aufgabe_4_3() {
     ifs.open(dateiname); // Datei öffnen
     if (!ifs) { // Prüfung ob Datei geöffnet werden konnte
         cerr << endl << "ERROR: Datei konnte nicht geöffnet werden" << endl;
+        exit(1);
     }
 
     int maxstring = 256;                    // Puffergröße
@@ -140,14 +141,14 @@ void aufgabe_4_3() {
             if (zustand == ZUSTAND_LEER) summeZahlen++;  // Wenn neue Zahl beginnt
             else if (zustand == ZUSTAND_WORD) { // Wenn in einem Wort
                 cout << "ERROR: Eine Zahl kann nicht im Wort vorkommen!";
-                exit(1);
+                exit(2);
             }
             zustand = ZUSTAND_ZAHL;
         } else { // Wenn nächstes Zeichen Buchstabe oder sonstiges Zeichen ist
             if (zustand == ZUSTAND_LEER) summeWoerter++;  // Wenn neues Wort beginnt
             else if (zustand == ZUSTAND_ZAHL) {  // Wenn in einer Zahl
                 cout << "ERROR: Eine Zahl kann nicht im Wort vorkommen!";
-                exit(1);
+                exit(3);
             }
             zustand = ZUSTAND_WORD;
         }
