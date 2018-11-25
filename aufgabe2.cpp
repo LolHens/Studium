@@ -2,8 +2,7 @@
 //
 //       Filename:  aufgabe2.cpp
 //
-//    Description:  Berechnung der harmonischen, alternierend harmonischen,
-//                  Leibnizschen und geometrischen Reihe
+//    Description:  ASCII-Tabelle, Rundungsfehler und Dreiecksfläche
 //
 //        Version:  1.0
 //        Created:  01.10.2018

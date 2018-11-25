@@ -2,8 +2,7 @@
 //
 //       Filename:  aufgabe3.cpp
 //
-//    Description:  Berechnung der harmonischen, alternierend harmonischen,
-//                  Leibnizschen und geometrischen Reihe
+//    Description:  Zufallszahlen
 //
 //        Version:  1.0
 //        Created:  13.10.2018

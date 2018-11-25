@@ -8,5 +8,6 @@ add_executable(aufgabe2 aufgabe2.cpp)
 add_executable(aufgabe3 aufgabe3.cpp)
 add_executable(aufgabe4 aufgabe4.cpp)
 add_executable(aufgabe5 aufgabe5.cpp)
+add_executable(aufgabe6 aufgabe6.cpp)
 
 set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
