@@ -150,6 +150,10 @@ void aufgabe_6_1() {
     cout << endl;
 }
 
+/**
+ * Nummer mit Luhn-Algorythmus überprüfen
+ * @param number Nummer welche überprüft werden soll
+ */
 bool luhn_check(string number) {
     int summe = 0;
     char c;
