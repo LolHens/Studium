@@ -151,7 +151,7 @@ void aufgabe_6_1() {
 }
 
 /**
- * Nummer mit Luhn-Algorythmus überprüfen
+ * Nummer mit Luhn-Algorithmus überprüfen
  * @param number Nummer welche überprüft werden soll
  */
 bool luhn_check(string number) {
@@ -175,7 +175,7 @@ bool luhn_check(string number) {
 
 /**
  * Aufgabe 6.2
- * Luhn-Algorythmus
+ * Luhn-Algorithmus
  */
 void aufgabe_6_2() {
     cout << (luhn_check("61789372994") ? "true" : "false") << endl;
