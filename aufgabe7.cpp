@@ -1,11 +1,11 @@
 // =============================================================================
 //
-//       Filename:  aufgabe6.cpp
+//       Filename:  aufgabe7.cpp
 //
-//    Description:  Luhn-Algorythmus
+//    Description:  Bearbeiten von Bildern
 //
 //        Version:  1.0
-//        Created:  25.11.2018
+//        Created:  13.12.2018
 //       Revision:  none
 //       Compiler:  g++
 //
@@ -17,58 +17,69 @@
 #include <iomanip>
 #include <fstream>
 #include <cfloat>
+
 #include <Windows.h>
 
 using namespace std;
 
+#pragma pack(1)
 struct bmpHeader {
-   unsigned short int bfType;
-   unsigned int bfSize;
-   unsigned int bfReserved;
-   unsigned int bfOffBits;
-   unsigned int biSize;
-   int biWidth;
-   int biHeight;
-   unsigned short int biPlanes;
-   unsigned short int biBitCount;
-   unsigned int biCompression;
-   unsigned int biSizeImage;
-   int biXPelsPerMeter;
-   int biYPelsPerMeter;
-   unsigned int biClrUsed;
-   unsigned int biClrImportant;
+    uint16_t bfType;
+    uint32_t bfSize;
+    uint32_t bfReserved;
+    uint32_t bfOffBits;
+    uint32_t biSize;
+    uint32_t biWidth;
+    uint32_t biHeight;
+    uint16_t biPlanes;
+    uint16_t biBitCount;
+    uint32_t biCompression;
+    uint32_t biSizeImage;
+    uint32_t biXPelsPerMeter;
+    uint32_t biYPelsPerMeter;
+    uint32_t biClrUsed;
+    uint32_t biClrImportant;
 };
 
-char* encodeBmp(char grayBytes[], int width, int height) {
+void writeBmp(ofstream &ofs, const char *grayBytes, int width, int height) {
     const int bitmapFileHeaderLength = 14;
     const int bitmapInfoHeaderLength = 40;
     const int bitmapHeaderLength = bitmapFileHeaderLength + bitmapInfoHeaderLength;
-    const int colorTableLength = 4 * 2;
-    const int colorMapLength = width * height;
-    const int bitmapFileLength = bitmapHeaderLength + colorTableLength + colorMapLength;
 
-    struct bmpHeader header;
-    header.bfType = 0x424D;
-    header.bfSize = bitmapFileLength;
-    header.bfReserved = 0;
-    header.bfOffBits = bitmapHeaderLength;
-    header.biSize = bitmapInfoHeaderLength;
-    header.biWidth = width;
-    header.biHeight = height;
-    header.biPlanes = 1;
-    header.biBitCount = 1;
-    header.biCompression = 0;
-    header.biSizeImage = 0;
-    header.biXPelsPerMeter = 0;
-    header.biYPelsPerMeter = 0;
-    header.biClrUsed = 0;
+    bmpHeader header = {
+            .bfType = 0x4D42,
+            .bfSize = 0,
+            .bfReserved = 0,
+            .bfOffBits = (unsigned int) bitmapHeaderLength,
+            .biSize = bitmapInfoHeaderLength,
+            .biWidth = (unsigned int) width,
+            .biHeight = (unsigned int) height,
+            .biPlanes = 1,
+            .biBitCount = 32,
+            .biCompression = 0,
+            .biSizeImage = 0,
+            .biXPelsPerMeter = 0,
+            .biYPelsPerMeter = 0,
+            .biClrUsed = 0,
+            .biClrImportant = 0
+    };
 
-    /*int bmpLength = headerLength + lenght;
-    char[] header = {0x424D,
-                     bmpLength,
-                     0,
-                     headerLength,
-                     };*/
+    ofs.write((char *) &header, sizeof(header));
+
+    char bytes[width * height * 4];
+
+    int i = 0;
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            char color = *(grayBytes + (height - y - 1) + x * height);
+            bytes[i++] = color;
+            bytes[i++] = color;
+            bytes[i++] = color;
+            bytes[i++] = 0;
+        }
+    }
+
+    ofs.write(bytes, sizeof(bytes));
 }
 
 /**
@@ -83,14 +94,12 @@ void aufgabe_7_1() {
         exit(1);
     }
 
-    cout << "TEST" << endl;
-
-    char* field = 0;
+    string field;
     ifs >> field;
     ifs >> field;
-    const int width = atoi(field);
+    const int width = atoi(field.c_str());
     ifs >> field;
-    const int height = atoi(field);
+    const int height = atoi(field.c_str());
     ifs >> field;
 
     char colors[width][height];
@@ -98,24 +107,30 @@ void aufgabe_7_1() {
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
             ifs >> field;
-            colors[x][y] = (char) atoi(field);
+            colors[x][y] = (char) atoi(field.c_str());
         }
     }
 
-    string ofs_filename = "../dreifach-out-7-1.pgm"; // Dateiname
+    ifs.close();
+
+    string ofs_filename = "../dreifach-out-7-1.bmp"; // Dateiname
     ofstream ofs; // Dateistream initialisieren
-    ofs.open(ofs_filename); // Datei öffnen
+    ofs.open(ofs_filename, ofstream::binary); // Datei öffnen
     if (!ofs) { // Prüfung ob Datei geöffnet werden konnte
         cerr << endl << "ERROR: Datei konnte nicht geöffnet werden" << endl;
         exit(2);
     }
 
-    for (int y = 0; y < height; y++) {
+    writeBmp(ofs, (char *) &colors, width, height);
+
+    ofs.close();
+
+    /*for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
             ifs >> field;
             colors[x][y] = (char) atoi(field);
         }
-    }
+    }*/
 }
 
 //-----------------------------------------------------------------------------
