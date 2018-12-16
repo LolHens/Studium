@@ -22,6 +22,8 @@
 
 using namespace std;
 
+typedef unsigned char Pixel;
+
 /**
  * Struct for the header of the BMP file format
  */
@@ -45,14 +47,37 @@ struct bmpHeader {
 };
 
 /**
+ * Read Pixel from image
+ * @param image image as flat array of graytones
+ * @param x x position
+ * @param y y position
+ * @param height height of the image
+ * @return color at the given position
+ */
+Pixel getPixel(Pixel* image, int x, int y, int height) {
+    return image[x * height + y];
+}
+
+/**
+ * Write Pixel in an image
+ * @param image image as flat array of graytones
+ * @param x x position
+ * @param y y position
+ * @param height height of the image
+ * @param color color to write
+ */
+void setPixel(Pixel* image, int x, int y, int height, Pixel color) {
+    image[x * height + y] = color;
+}
+
+/**
  * Write the image as BMP
- *
  * @param filename name of the output file
- * @param colors image as flat array of graytones
+ * @param image image as flat array of graytones
  * @param width width of the image
  * @param height height of the image
  */
-void writeBmp(string filename, unsigned char *colors, int width, int height) {
+void writeBmp(string filename, Pixel* image, int width, int height) {
     ofstream ofs; // Dateistream initialisieren
     ofs.open(filename, ofstream::binary); // Datei öffnen
     if (!ofs) { // Prüfung ob Datei geöffnet werden konnte
@@ -82,13 +107,13 @@ void writeBmp(string filename, unsigned char *colors, int width, int height) {
             .biClrImportant = 0
     };
 
-    ofs.write((char *) &header, sizeof(header));
+    ofs.write((char*) &header, sizeof(header));
 
     int i = 0;
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
             const int invertedY = height - y - 1;
-            char color = colors[x * height + invertedY];
+            char color = getPixel(image, x, invertedY, height);
             char bytes[] = {color, color, color, 0};
             ofs.write(bytes, sizeof(bytes));
         }
@@ -99,13 +124,12 @@ void writeBmp(string filename, unsigned char *colors, int width, int height) {
 
 /**
  * Read an image from a PGM file
- *
  * @param filename name of the file
  * @param width returned width of the image
  * @param height returned height of the image
  * @return colors image as flat array of graytones
  */
-unsigned char *readPgm(string filename, int &width, int &height) {
+Pixel* readPgm(string filename, int& width, int& height) {
     ifstream ifs; // Dateistream initialisieren
     ifs.open(filename); // Datei öffnen
     if (!ifs) { // Prüfung ob Datei geöffnet werden konnte
@@ -127,30 +151,29 @@ unsigned char *readPgm(string filename, int &width, int &height) {
     height = stoi(field);
     ifs >> field;
 
-    auto *colors = (unsigned char *) malloc(width * height * sizeof(unsigned char));
+    Pixel* image = (Pixel*) malloc(width * height * sizeof(Pixel));
 
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
             ifs >> field;
-            colors[x * height + y] = (unsigned char) stoi(field);
+            setPixel(image, x, y, height, (Pixel) stoi(field));
         }
     }
 
     ifs.close();
 
-    return colors;
+    return image;
 }
 
 
 /**
  * Write the image as PGM
- *
  * @param filename name of the output file
- * @param colors image as flat array of graytones
+ * @param image image as flat array of graytones
  * @param width width of the image
  * @param height height of the image
  */
-void writePgm(string filename, unsigned char *colors, int width, int height) {
+void writePgm(string filename, Pixel* image, int width, int height) {
     ofstream ofs; // Dateistream initialisieren
     ofs.open(filename); // Datei öffnen
     if (!ofs) { // Prüfung ob Datei geöffnet werden konnte
@@ -164,7 +187,7 @@ void writePgm(string filename, unsigned char *colors, int width, int height) {
 
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
-            unsigned char color = colors[x * height + y];
+            Pixel color = getPixel(image, x, y, height);
             ofs << " " << setw(3) << (int) color;
         }
         ofs << endl;
@@ -180,15 +203,185 @@ void writePgm(string filename, unsigned char *colors, int width, int height) {
 void aufgabe_7_1() {
     string ifs_filename = "../dreifach-7-1.pgm"; // Dateiname
     int width, height;
-    unsigned char *colors = readPgm(ifs_filename, width, height);
+    Pixel* image = readPgm(ifs_filename, width, height);
 
-    string ofs_filename = "../dreifach-out-7-1.bmp"; // Dateiname
-    writeBmp(ofs_filename, colors, width, height);
+    string ofs_filename = "../dreifach-7-1.out.bmp"; // Dateiname
+    writeBmp(ofs_filename, image, width, height);
 
-    string ofs_filename2 = "../dreifach-out-7-1.pgm"; // Dateiname
-    writePgm(ofs_filename2, colors, width, height);
+    string ofs_filename2 = "../dreifach-7-1.out.pgm"; // Dateiname
+    writePgm(ofs_filename2, image, width, height);
 
-    free(colors);
+    free(image);
+}
+
+Pixel* glaetten(Pixel* image, int width, int height) {
+    Pixel* newImage = (Pixel*) malloc(width * height * sizeof(Pixel));
+
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            int sum = getPixel(image, x, y, height);
+            int pixels = 1;
+            if (x - 1 >= 0) {
+                sum += getPixel(image, x - 1, y, height);
+                pixels++;
+
+                if (y - 1 >= 0) {
+                    sum += getPixel(image, x - 1, y - 1, height);
+                    pixels++;
+                }
+            }
+            if (y - 1 >= 0) {
+                sum += getPixel(image, x, y - 1, height);
+                pixels++;
+
+                if (x + 1 < width) {
+                    sum += getPixel(image, x + 1, y - 1, height);
+                    pixels++;
+                }
+            }
+            if (x + 1 < width) {
+                sum += getPixel(image, x + 1, y, height);
+                pixels++;
+
+                if (y + 1 < height) {
+                    sum += getPixel(image, x + 1, y + 1, height);
+                    pixels++;
+                }
+            }
+            if (y + 1 < height) {
+                sum += getPixel(image, x, y + 1, height);
+                pixels++;
+
+                if (x - 1 >= 0) {
+                    sum += getPixel(image, x - 1, y + 1, height);
+                    pixels++;
+                }
+            }
+
+            Pixel newPixel = (Pixel) (sum / pixels);
+            setPixel(newImage, x, y, height, newPixel);
+        }
+    }
+
+    return newImage;
+}
+
+Pixel* invertieren(Pixel* image, int width, int height, int graumax) {
+    Pixel* newImage = (Pixel*) malloc(width * height * sizeof(Pixel));
+
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            Pixel color = getPixel(image, x, y, height);
+            Pixel newPixel = (Pixel) (graumax - color);
+            setPixel(newImage, x, y, height, newPixel);
+        }
+    }
+
+    return newImage;
+}
+
+Pixel* kantenbildung(Pixel* image, int width, int height) {
+    Pixel* newImage = (Pixel*) malloc(width * height * sizeof(Pixel));
+
+    for (int y = 1; y < height - 1; y++) {
+        for (int x = 1; x < width - 1; x++) {
+            int sum = getPixel(image, x, y, height) * 4;
+            sum += getPixel(image, x - 1, y, height) * -1;
+            sum += getPixel(image, x, y - 1, height) * -1;
+            sum += getPixel(image, x + 1, y, height) * -1;
+            sum += getPixel(image, x, y + 1, height) * -1;
+
+            Pixel newPixel = (Pixel) abs(sum / 9);
+            setPixel(newImage, x, y, height, newPixel);
+        }
+    }
+
+    return newImage;
+}
+
+Pixel* schaerfen(Pixel* image, int width, int height, int graumax) {
+    Pixel* newImage = (Pixel*) malloc(width * height * sizeof(Pixel));
+
+    for (int y = 1; y < height - 1; y++) {
+        for (int x = 1; x < width - 1; x++) {
+            int sum = getPixel(image, x, y, height) * 9;
+            sum += getPixel(image, x - 1, y, height) * -1;
+            sum += getPixel(image, x, y - 1, height) * -1;
+            sum += getPixel(image, x + 1, y, height) * -1;
+            sum += getPixel(image, x, y + 1, height) * -1;
+            sum += getPixel(image, x - 1, y - 1, height) * -1;
+            sum += getPixel(image, x + 1, y - 1, height) * -1;
+            sum += getPixel(image, x + 1, y + 1, height) * -1;
+            sum += getPixel(image, x - 1, y + 1, height) * -1;
+            if (sum < 0) sum = 0;
+            else if (sum > graumax) sum = graumax;
+
+            Pixel newPixel = (Pixel) sum;
+            setPixel(newImage, x, y, height, newPixel);
+        }
+    }
+
+    return newImage;
+}
+
+/**
+ * Aufgabe 7.2
+ * Read, edit and then write an image
+ */
+void aufgabe_7_2() {
+    string ifs_filename = "../dreifach-7-1.pgm"; // Dateiname
+    int width, height;
+    Pixel* image = readPgm(ifs_filename, width, height);
+
+    {
+        Pixel* newImage = glaetten(image, width, height);
+
+        string ofs_filename = "../dreifach-glaetten-7-1.out.bmp"; // Dateiname
+        writeBmp(ofs_filename, newImage, width, height);
+
+        string ofs_filename2 = "../dreifach-glaetten-7-1.out.pgm"; // Dateiname
+        writePgm(ofs_filename2, newImage, width, height);
+
+        free(newImage);
+    }
+
+    {
+        Pixel* newImage = invertieren(image, width, height, 255);
+
+        string ofs_filename = "../dreifach-invertieren-7-1.out.bmp";
+        writeBmp(ofs_filename, newImage, width, height);
+
+        string ofs_filename2 = "../dreifach-invertieren-7-1.out.pgm";
+        writePgm(ofs_filename2, newImage, width, height);
+
+        free(newImage);
+    }
+
+    {
+        Pixel* newImage = kantenbildung(image, width, height);
+
+        string ofs_filename = "../dreifach-kantenbildung-7-1.out.bmp";
+        writeBmp(ofs_filename, newImage, width, height);
+
+        string ofs_filename2 = "../dreifach-kantenbildung-7-1.out.pgm";
+        writePgm(ofs_filename2, newImage, width, height);
+
+        free(newImage);
+    }
+
+    {
+        Pixel* newImage = schaerfen(image, width, height, 255);
+
+        string ofs_filename = "../dreifach-schaerfen-7-1.out.bmp";
+        writeBmp(ofs_filename, newImage, width, height);
+
+        string ofs_filename2 = "../dreifach-schaerfen-7-1.out.pgm";
+        writePgm(ofs_filename2, newImage, width, height);
+
+        free(newImage);
+    }
+
+    free(image);
 }
 
 //-----------------------------------------------------------------------------
@@ -202,6 +395,8 @@ int main() {
     cout << "Hello, World!" << endl << endl;
 
     aufgabe_7_1();
+    cout << endl;
+    aufgabe_7_2();
     cout << endl;
 
     return 0;
