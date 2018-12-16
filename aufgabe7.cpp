@@ -283,16 +283,20 @@ Pixel* invertieren(Pixel* image, int width, int height, int graumax) {
 Pixel* kantenbildung(Pixel* image, int width, int height) {
     Pixel* newImage = (Pixel*) malloc(width * height * sizeof(Pixel));
 
-    for (int y = 1; y < height - 1; y++) {
-        for (int x = 1; x < width - 1; x++) {
-            int sum = getPixel(image, x, y, height) * 4;
-            sum += getPixel(image, x - 1, y, height) * -1;
-            sum += getPixel(image, x, y - 1, height) * -1;
-            sum += getPixel(image, x + 1, y, height) * -1;
-            sum += getPixel(image, x, y + 1, height) * -1;
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            if (x >= 1 && y >= 1 && x < width - 1 && y < height - 1) {
+                int sum = getPixel(image, x, y, height) * 4;
+                sum += getPixel(image, x - 1, y, height) * -1;
+                sum += getPixel(image, x, y - 1, height) * -1;
+                sum += getPixel(image, x + 1, y, height) * -1;
+                sum += getPixel(image, x, y + 1, height) * -1;
 
-            Pixel newPixel = (Pixel) abs(sum / 9);
-            setPixel(newImage, x, y, height, newPixel);
+                Pixel newPixel = (Pixel) abs(sum / 9);
+                setPixel(newImage, x, y, height, newPixel);
+            } else {
+                setPixel(newImage, x, y, height, 0);
+            }
         }
     }
 
@@ -302,22 +306,26 @@ Pixel* kantenbildung(Pixel* image, int width, int height) {
 Pixel* schaerfen(Pixel* image, int width, int height, int graumax) {
     Pixel* newImage = (Pixel*) malloc(width * height * sizeof(Pixel));
 
-    for (int y = 1; y < height - 1; y++) {
-        for (int x = 1; x < width - 1; x++) {
-            int sum = getPixel(image, x, y, height) * 9;
-            sum += getPixel(image, x - 1, y, height) * -1;
-            sum += getPixel(image, x, y - 1, height) * -1;
-            sum += getPixel(image, x + 1, y, height) * -1;
-            sum += getPixel(image, x, y + 1, height) * -1;
-            sum += getPixel(image, x - 1, y - 1, height) * -1;
-            sum += getPixel(image, x + 1, y - 1, height) * -1;
-            sum += getPixel(image, x + 1, y + 1, height) * -1;
-            sum += getPixel(image, x - 1, y + 1, height) * -1;
-            if (sum < 0) sum = 0;
-            else if (sum > graumax) sum = graumax;
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            if (x >= 1 && y >= 1 && x < width - 1 && y < height - 1) {
+                int sum = getPixel(image, x, y, height) * 9;
+                sum += getPixel(image, x - 1, y, height) * -1;
+                sum += getPixel(image, x, y - 1, height) * -1;
+                sum += getPixel(image, x + 1, y, height) * -1;
+                sum += getPixel(image, x, y + 1, height) * -1;
+                sum += getPixel(image, x - 1, y - 1, height) * -1;
+                sum += getPixel(image, x + 1, y - 1, height) * -1;
+                sum += getPixel(image, x + 1, y + 1, height) * -1;
+                sum += getPixel(image, x - 1, y + 1, height) * -1;
+                if (sum < 0) sum = 0;
+                else if (sum > graumax) sum = graumax;
 
-            Pixel newPixel = (Pixel) sum;
-            setPixel(newImage, x, y, height, newPixel);
+                Pixel newPixel = (Pixel) sum;
+                setPixel(newImage, x, y, height, newPixel);
+            } else {
+                setPixel(newImage, x, y, height, 0);
+            }
         }
     }
 
