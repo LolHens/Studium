@@ -127,9 +127,10 @@ void writeBmp(string filename, Pixel* image, int width, int height) {
  * @param filename name of the file
  * @param width returned width of the image
  * @param height returned height of the image
+ * @param maxGray returned grau max value
  * @return colors image as flat array of graytones
  */
-Pixel* readPgm(string filename, int& width, int& height) {
+Pixel* readPgm(string filename, int& width, int& height, int& maxGray) {
     ifstream ifs; // Dateistream initialisieren
     ifs.open(filename); // Datei öffnen
     if (!ifs) { // Prüfung ob Datei geöffnet werden konnte
@@ -150,6 +151,7 @@ Pixel* readPgm(string filename, int& width, int& height) {
     ifs >> field;
     height = stoi(field);
     ifs >> field;
+    maxGray = stoi(field);
 
     Pixel* image = (Pixel*) malloc(width * height * sizeof(Pixel));
 
@@ -202,8 +204,8 @@ void writePgm(string filename, Pixel* image, int width, int height) {
  */
 void aufgabe_7_1() {
     string ifs_filename = "../dreifach-7-1.pgm"; // Dateiname
-    int width, height;
-    Pixel* image = readPgm(ifs_filename, width, height);
+    int width, height, maxGray;
+    Pixel* image = readPgm(ifs_filename, width, height, maxGray);
 
     string ofs_filename = "../dreifach-7-1.out.bmp"; // Dateiname
     writeBmp(ofs_filename, image, width, height);
@@ -214,6 +216,13 @@ void aufgabe_7_1() {
     free(image);
 }
 
+/**
+ * Bild glätten
+ * @param image image as flat array of graytones
+ * @param width width of the image
+ * @param height height of the image
+ * @return new image as flat array of graytones
+ */
 Pixel* glaetten(Pixel* image, int width, int height) {
     Pixel* newImage = (Pixel*) malloc(width * height * sizeof(Pixel));
 
@@ -266,13 +275,21 @@ Pixel* glaetten(Pixel* image, int width, int height) {
     return newImage;
 }
 
-Pixel* invertieren(Pixel* image, int width, int height, int graumax) {
+/**
+ * Bild invertieren
+ * @param image image as flat array of graytones
+ * @param width width of the image
+ * @param height height of the image
+ * @param maxGray grau max value
+ * @return new image as flat array of graytones
+ */
+Pixel* invertieren(Pixel* image, int width, int height, int maxGray) {
     Pixel* newImage = (Pixel*) malloc(width * height * sizeof(Pixel));
 
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
             Pixel color = getPixel(image, x, y, height);
-            Pixel newPixel = (Pixel) (graumax - color);
+            Pixel newPixel = (Pixel) (maxGray - color);
             setPixel(newImage, x, y, height, newPixel);
         }
     }
@@ -280,6 +297,13 @@ Pixel* invertieren(Pixel* image, int width, int height, int graumax) {
     return newImage;
 }
 
+/**
+ * Bild Kanten bilden
+ * @param image image as flat array of graytones
+ * @param width width of the image
+ * @param height height of the image
+ * @return new image as flat array of graytones
+ */
 Pixel* kantenbildung(Pixel* image, int width, int height) {
     Pixel* newImage = (Pixel*) malloc(width * height * sizeof(Pixel));
 
@@ -303,7 +327,15 @@ Pixel* kantenbildung(Pixel* image, int width, int height) {
     return newImage;
 }
 
-Pixel* schaerfen(Pixel* image, int width, int height, int graumax) {
+/**
+ * Bild schärfen
+ * @param image image as flat array of graytones
+ * @param width width of the image
+ * @param height height of the image
+ * @param maxGray grau max value
+ * @return new image as flat array of graytones
+ */
+Pixel* schaerfen(Pixel* image, int width, int height, int maxGray) {
     Pixel* newImage = (Pixel*) malloc(width * height * sizeof(Pixel));
 
     for (int y = 0; y < height; y++) {
@@ -319,7 +351,7 @@ Pixel* schaerfen(Pixel* image, int width, int height, int graumax) {
                 sum += getPixel(image, x + 1, y + 1, height) * -1;
                 sum += getPixel(image, x - 1, y + 1, height) * -1;
                 if (sum < 0) sum = 0;
-                else if (sum > graumax) sum = graumax;
+                else if (sum > maxGray) sum = maxGray;
 
                 Pixel newPixel = (Pixel) sum;
                 setPixel(newImage, x, y, height, newPixel);
@@ -338,8 +370,8 @@ Pixel* schaerfen(Pixel* image, int width, int height, int graumax) {
  */
 void aufgabe_7_2() {
     string ifs_filename = "../dreifach-7-1.pgm"; // Dateiname
-    int width, height;
-    Pixel* image = readPgm(ifs_filename, width, height);
+    int width, height, maxGray;
+    Pixel* image = readPgm(ifs_filename, width, height, maxGray);
 
     {
         Pixel* newImage = glaetten(image, width, height);
@@ -354,7 +386,7 @@ void aufgabe_7_2() {
     }
 
     {
-        Pixel* newImage = invertieren(image, width, height, 255);
+        Pixel* newImage = invertieren(image, width, height, maxGray);
 
         string ofs_filename = "../dreifach-invertieren-7-1.out.bmp";
         writeBmp(ofs_filename, newImage, width, height);
@@ -378,7 +410,7 @@ void aufgabe_7_2() {
     }
 
     {
-        Pixel* newImage = schaerfen(image, width, height, 255);
+        Pixel* newImage = schaerfen(image, width, height, maxGray);
 
         string ofs_filename = "../dreifach-schaerfen-7-1.out.bmp";
         writeBmp(ofs_filename, newImage, width, height);
