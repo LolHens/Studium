@@ -17,6 +17,7 @@
 #include <iomanip>
 #include <fstream>
 #include <cfloat>
+#include <string.h>
 
 #include <Windows.h>
 
