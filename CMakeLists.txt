@@ -11,5 +11,6 @@ add_executable(aufgabe5 aufgabe5.cpp)
 add_executable(aufgabe6 aufgabe6.cpp)
 add_executable(aufgabe7 aufgabe7.cpp)
 add_executable(munchtest munchtest.cpp)
+add_executable(bitstring bitstring.cpp)
 
 set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
