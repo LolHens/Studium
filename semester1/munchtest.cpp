@@ -8,7 +8,7 @@
 #include <cfloat>
 #include <string.h>
 
-#include <Windows.h>
+#include <windows.h>
 
 using namespace std;
 

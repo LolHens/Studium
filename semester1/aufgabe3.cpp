@@ -17,7 +17,7 @@
 #include <iomanip>
 #include <fstream>
 #include <cfloat>
-#include <Windows.h>
+#include <windows.h>
 
 using namespace std;
 
@@ -71,7 +71,7 @@ void aufgabe_3_1() {
  * Datei einlesen
  */
 void aufgabe_3_2() {
-    string dateiname = "../daten-3-2.txt"; // Dateiname
+    string dateiname = "daten-3-2.txt"; // Dateiname
     ifstream ifs; // Dateistream initialisieren
     ifs.open(dateiname); // Datei öffnen
     if (!ifs) { // Prüfung ob Datei geöffnet werden konnte

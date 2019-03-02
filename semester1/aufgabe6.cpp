@@ -17,7 +17,7 @@
 #include <iomanip>
 #include <fstream>
 #include <cfloat>
-#include <Windows.h>
+#include <windows.h>
 
 using namespace std;
 

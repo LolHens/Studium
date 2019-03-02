@@ -17,7 +17,7 @@
 #include <iomanip>
 #include <fstream>
 #include <cfloat>
-#include <Windows.h>
+#include <windows.h>
 
 using namespace std;
 
@@ -104,7 +104,7 @@ void aufgabe_4_2() {
 void aufgabe_4_3() {
     cout << "***** Wörter abzählen *****" << endl;
 
-    string dateiname = "../text-4-3.txt"; // Dateiname
+    string dateiname = "text-4-3.txt"; // Dateiname
     ifstream ifs; // Dateistream initialisieren
     ifs.open(dateiname); // Datei öffnen
     if (!ifs) { // Prüfung ob Datei geöffnet werden konnte

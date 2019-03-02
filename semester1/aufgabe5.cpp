@@ -17,7 +17,7 @@
 #include <iomanip>
 #include <fstream>
 #include <cfloat>
-#include <Windows.h>
+#include <windows.h>
 
 using namespace std;
 
@@ -26,7 +26,7 @@ using namespace std;
  * Chiffrieren mit ROT13
  */
 void aufgabe_5_1() {
-    string ifs_filename = "../klartext-5-1.txt"; // Dateiname
+    string ifs_filename = "klartext-5-1.txt"; // Dateiname
     ifstream ifs; // Dateistream initialisieren
     ifs.open(ifs_filename); // Datei öffnen
     if (!ifs) { // Prüfung ob Datei geöffnet werden konnte
@@ -34,7 +34,7 @@ void aufgabe_5_1() {
         exit(1);
     }
 
-    string ofs_filename = "../geheim-5-1.txt"; // Dateiname
+    string ofs_filename = "geheim-5-1.txt"; // Dateiname
     ofstream ofs; // Dateistream initialisieren
     ofs.open(ofs_filename); // Datei öffnen
     if (!ofs) { // Prüfung ob Datei geöffnet werden konnte
@@ -107,7 +107,7 @@ void feld_rechts_rotieren(char a[], unsigned int n, unsigned int shift) {
  * Caesar-Verschlüsselung
  */
 void aufgabe_5_2() {
-    string ifs_filename = "../klartext-5-1.txt"; // Dateiname
+    string ifs_filename = "klartext-5-1.txt"; // Dateiname
     ifstream ifs; // Dateistream initialisieren
     ifs.open(ifs_filename); // Datei öffnen
     if (!ifs) { // Prüfung ob Datei geöffnet werden konnte
@@ -115,7 +115,7 @@ void aufgabe_5_2() {
         exit(1);
     }
 
-    string ofs_filename = "../geheim-5-1.txt"; // Dateiname
+    string ofs_filename = "geheim-5-1.txt"; // Dateiname
     ofstream ofs; // Dateistream initialisieren
     ofs.open(ofs_filename); // Datei öffnen
     if (!ofs) { // Prüfung ob Datei geöffnet werden konnte

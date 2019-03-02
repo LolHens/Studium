@@ -1,0 +1,16 @@
+cmake_minimum_required(VERSION 3.6)
+project(Semester1)
+
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
+
+add_executable(aufgabe1 aufgabe1.cpp)
+add_executable(aufgabe2 aufgabe2.cpp)
+add_executable(aufgabe3 aufgabe3.cpp)
+add_executable(aufgabe4 aufgabe4.cpp)
+add_executable(aufgabe5 aufgabe5.cpp)
+add_executable(aufgabe6 aufgabe6.cpp)
+add_executable(aufgabe7 aufgabe7.cpp)
+add_executable(munchtest munchtest.cpp)
+add_executable(bitstring bitstring.cpp)

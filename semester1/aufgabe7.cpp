@@ -19,7 +19,7 @@
 #include <cfloat>
 #include <string.h>
 
-#include <Windows.h>
+#include <windows.h>
 
 using namespace std;
 
@@ -202,14 +202,14 @@ void writePgm(string filename, Pixel* image, int width, int height) {
  * Read and then write an image
  */
 void aufgabe_7_1() {
-    string ifs_filename = "../dreifach-7-1.pgm"; // Dateiname
+    string ifs_filename = "dreifach-7-1.pgm"; // Dateiname
     int width, height, maxGray;
     Pixel* image = readPgm(ifs_filename, width, height, maxGray);
 
-    string ofs_filename = "../dreifach-7-1.out.bmp"; // Dateiname
+    string ofs_filename = "dreifach-7-1.out.bmp"; // Dateiname
     writeBmp(ofs_filename, image, width, height);
 
-    string ofs_filename2 = "../dreifach-7-1.out.pgm"; // Dateiname
+    string ofs_filename2 = "dreifach-7-1.out.pgm"; // Dateiname
     writePgm(ofs_filename2, image, width, height);
 
     free(image);
@@ -355,17 +355,17 @@ Pixel* schaerfen(Pixel* image, int width, int height, int maxGray) {
  * Read, edit and then write an image
  */
 void aufgabe_7_2() {
-    string ifs_filename = "../dreifach-7-1.pgm"; // Dateiname
+    string ifs_filename = "dreifach-7-1.pgm"; // Dateiname
     int width, height, maxGray;
     Pixel* image = readPgm(ifs_filename, width, height, maxGray);
 
     {
         Pixel* newImage = glaetten(image, width, height);
 
-        string ofs_filename = "../dreifach-glaetten-7-1.out.bmp"; // Dateiname
+        string ofs_filename = "dreifach-glaetten-7-1.out.bmp"; // Dateiname
         writeBmp(ofs_filename, newImage, width, height);
 
-        string ofs_filename2 = "../dreifach-glaetten-7-1.out.pgm"; // Dateiname
+        string ofs_filename2 = "dreifach-glaetten-7-1.out.pgm"; // Dateiname
         writePgm(ofs_filename2, newImage, width, height);
 
         free(newImage);
@@ -374,10 +374,10 @@ void aufgabe_7_2() {
     {
         Pixel* newImage = invertieren(image, width, height, maxGray);
 
-        string ofs_filename = "../dreifach-invertieren-7-1.out.bmp";
+        string ofs_filename = "dreifach-invertieren-7-1.out.bmp";
         writeBmp(ofs_filename, newImage, width, height);
 
-        string ofs_filename2 = "../dreifach-invertieren-7-1.out.pgm";
+        string ofs_filename2 = "dreifach-invertieren-7-1.out.pgm";
         writePgm(ofs_filename2, newImage, width, height);
 
         free(newImage);
@@ -386,10 +386,10 @@ void aufgabe_7_2() {
     {
         Pixel* newImage = kantenbildung(image, width, height);
 
-        string ofs_filename = "../dreifach-kantenbildung-7-1.out.bmp";
+        string ofs_filename = "dreifach-kantenbildung-7-1.out.bmp";
         writeBmp(ofs_filename, newImage, width, height);
 
-        string ofs_filename2 = "../dreifach-kantenbildung-7-1.out.pgm";
+        string ofs_filename2 = "dreifach-kantenbildung-7-1.out.pgm";
         writePgm(ofs_filename2, newImage, width, height);
 
         free(newImage);
@@ -398,10 +398,10 @@ void aufgabe_7_2() {
     {
         Pixel* newImage = schaerfen(image, width, height, maxGray);
 
-        string ofs_filename = "../dreifach-schaerfen-7-1.out.bmp";
+        string ofs_filename = "dreifach-schaerfen-7-1.out.bmp";
         writeBmp(ofs_filename, newImage, width, height);
 
-        string ofs_filename2 = "../dreifach-schaerfen-7-1.out.pgm";
+        string ofs_filename2 = "dreifach-schaerfen-7-1.out.pgm";
         writePgm(ofs_filename2, newImage, width, height);
 
         free(newImage);

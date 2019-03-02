@@ -16,7 +16,7 @@
 #include <iostream>
 #include <iomanip>
 #include <cmath>
-#include <Windows.h>
+#include <windows.h>
 
 /**
  * Aufgabe 2.1

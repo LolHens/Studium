@@ -16,7 +16,7 @@
 
 #include <iostream>
 #include <iomanip>
-#include <Windows.h>
+#include <windows.h>
 
 /**
  * harmonische Reihe
