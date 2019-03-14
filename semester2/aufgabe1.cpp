@@ -1,11 +1,11 @@
 // =============================================================================
 //
-//       Filename:  aufgabe7.cpp
+//       Filename:  aufgabe1.cpp
 //
 //    Description:  Bearbeiten von Bildern
 //
 //        Version:  1.0
-//        Created:  13.12.2018
+//        Created:  14.03.2019
 //       Revision:  none
 //       Compiler:  g++
 //
@@ -23,6 +23,14 @@
 using namespace std;
 
 typedef unsigned char Pixel;
+
+struct pgm_bild {
+    char magic[2]; // Bildtyp
+    int nx; // Zeilenzahl
+    int ny; // Spaltenzahl
+    int graumax; // Max. Grauwert
+    Pixel* bild; // Bildmatrix
+};
 
 /**
  * Struct for the header of the BMP file format
@@ -54,8 +62,8 @@ struct bmpHeader {
  * @param height height of the image
  * @return color at the given position
  */
-Pixel getPixel(Pixel* image, int x, int y, int height) {
-    return image[x * height + y];
+Pixel getPixel(pgm_bild* bild, int x, int y) {
+    return bild->bild[x * bild->ny + y];
 }
 
 /**
@@ -66,8 +74,8 @@ Pixel getPixel(Pixel* image, int x, int y, int height) {
  * @param height height of the image
  * @param color color to write
  */
-void setPixel(Pixel* image, int x, int y, int height, Pixel color) {
-    image[x * height + y] = color;
+void setPixel(pgm_bild* bild, int x, int y, Pixel color) {
+bild->bild[x * bild->ny + y] = color;
 }
 
 /**
@@ -77,9 +85,9 @@ void setPixel(Pixel* image, int x, int y, int height, Pixel color) {
  * @param width width of the image
  * @param height height of the image
  */
-void writeBmp(string filename, Pixel* image, int width, int height) {
+void bild_schreiben_bmp(string ofs_file_name, pgm_bild* bild) {
     ofstream ofs; // Dateistream initialisieren
-    ofs.open(filename, ofstream::binary); // Datei öffnen
+    ofs.open(ofs_file_name, ofstream::binary); // Datei öffnen
     if (!ofs) { // Prüfung ob Datei geöffnet werden konnte
         cerr << endl << "ERROR: Datei konnte nicht geöffnet werden" << endl;
         exit(2);
@@ -95,8 +103,8 @@ void writeBmp(string filename, Pixel* image, int width, int height) {
             .bfReserved = 0,
             .bfOffBits = (unsigned int) bitmapHeaderLength,
             .biSize = bitmapInfoHeaderLength,
-            .biWidth = (unsigned int) width,
-            .biHeight = (unsigned int) height,
+            .biWidth = (unsigned int) bild->nx,
+            .biHeight = (unsigned int) bild->ny,
             .biPlanes = 1,
             .biBitCount = 32,
             .biCompression = 0,
@@ -110,10 +118,10 @@ void writeBmp(string filename, Pixel* image, int width, int height) {
     ofs.write((char*) &header, sizeof(header));
 
     int i = 0;
-    for (int y = 0; y < height; y++)
-        for (int x = 0; x < width; x++) {
-            const int invertedY = height - y - 1;
-            char color = getPixel(image, x, invertedY, height);
+    for (int y = 0; y < bild->ny; y++)
+        for (int x = 0; x < bild->nx; x++) {
+            const int invertedY = bild->ny - y - 1;
+            char color = getPixel(bild, x, invertedY);
             char bytes[] = {color, color, color, 0};
             ofs.write(bytes, sizeof(bytes));
         }
@@ -129,40 +137,38 @@ void writeBmp(string filename, Pixel* image, int width, int height) {
  * @param maxGray returned grau max value
  * @return colors image as flat array of graytones
  */
-Pixel* readPgm(string filename, int& width, int& height, int& maxGray) {
+void bild_lesen(pgm_bild* bild, string ifs_file_name) {
     ifstream ifs; // Dateistream initialisieren
-    ifs.open(filename); // Datei öffnen
+    ifs.open(ifs_file_name); // Datei öffnen
     if (!ifs) { // Prüfung ob Datei geöffnet werden konnte
         cerr << endl << "ERROR: Datei konnte nicht geöffnet werden" << endl;
         exit(1);
     }
 
-    string field;
-    ifs >> field;
 
-    if (strcmp(field.c_str(), "P2") != 0) {
+    ifs >> bild->magic;
+    if (strcmp(bild->magic, "P2") != 0) {
         cerr << endl << "ERROR: Falsches Format" << endl;
         exit(1);
     }
 
+    string field;
     ifs >> field;
-    width = stoi(field);
+    bild->nx = stoi(field);
     ifs >> field;
-    height = stoi(field);
+    bild->ny = stoi(field);
     ifs >> field;
-    maxGray = stoi(field);
+    bild->graumax = stoi(field);
 
-    Pixel* image = (Pixel*) malloc(width * height * sizeof(Pixel));
+    Pixel* image = (Pixel*) malloc(bild->nx * bild->ny * sizeof(Pixel));
 
-    for (int y = 0; y < height; y++)
-        for (int x = 0; x < width; x++) {
+    for (int y = 0; y < bild->ny; y++)
+        for (int x = 0; x < bild->nx; x++) {
             ifs >> field;
-            setPixel(image, x, y, height, (Pixel) stoi(field));
+            setPixel(bild, x, y, (Pixel) stoi(field));
         }
 
     ifs.close();
-
-    return image;
 }
 
 
@@ -173,21 +179,21 @@ Pixel* readPgm(string filename, int& width, int& height, int& maxGray) {
  * @param width width of the image
  * @param height height of the image
  */
-void writePgm(string filename, Pixel* image, int width, int height) {
+void bild_schreiben(pgm_bild * bild, string ifs_file_name) {
     ofstream ofs; // Dateistream initialisieren
-    ofs.open(filename); // Datei öffnen
+    ofs.open(ifs_file_name); // Datei öffnen
     if (!ofs) { // Prüfung ob Datei geöffnet werden konnte
         cerr << endl << "ERROR: Datei konnte nicht geöffnet werden" << endl;
         exit(2);
     }
 
     ofs << "P2" << endl;
-    ofs << width << " " << height << endl;
+    ofs << bild->nx << " " << bild->ny << endl;
     ofs << 255 << endl;
 
-    for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-            Pixel color = getPixel(image, x, y, height);
+    for (int y = 0; y < bild->ny; y++) {
+        for (int x = 0; x < bild->nx; x++) {
+            Pixel color = getPixel(bild, x, y);
             ofs << " " << setw(3) << (int) color;
         }
         ofs << endl;
@@ -197,10 +203,10 @@ void writePgm(string filename, Pixel* image, int width, int height) {
 }
 
 /**
- * Aufgabe 7.1
+ * Aufgabe 1.1
  * Read and then write an image
  */
-void aufgabe_7_1() {
+/*void aufgabe_1_1() {
     string ifs_filename = "dreifach-7-1.pgm"; // Dateiname
     int width, height, maxGray;
     Pixel* image = readPgm(ifs_filename, width, height, maxGray);
@@ -212,7 +218,7 @@ void aufgabe_7_1() {
     writePgm(ofs_filename2, image, width, height);
 
     free(image);
-}
+}*/
 
 /**
  * Bild glätten
@@ -221,7 +227,7 @@ void aufgabe_7_1() {
  * @param height height of the image
  * @return new image as flat array of graytones
  */
-Pixel* glaetten(Pixel* image, int width, int height) {
+/*Pixel* glaetten(Pixel* image, int width, int height) {
     Pixel* newImage = (Pixel*) malloc(width * height * sizeof(Pixel));
 
     for (int y = 0; y < height; y++) {
@@ -250,7 +256,7 @@ Pixel* glaetten(Pixel* image, int width, int height) {
     }
 
     return newImage;
-}
+}*/
 
 /**
  * Bild invertieren
@@ -260,7 +266,7 @@ Pixel* glaetten(Pixel* image, int width, int height) {
  * @param maxGray grau max value
  * @return new image as flat array of graytones
  */
-Pixel* invertieren(Pixel* image, int width, int height, int maxGray) {
+/*Pixel* invertieren(Pixel* image, int width, int height, int maxGray) {
     Pixel* newImage = (Pixel*) malloc(width * height * sizeof(Pixel));
 
     for (int y = 0; y < height; y++)
@@ -271,7 +277,7 @@ Pixel* invertieren(Pixel* image, int width, int height, int maxGray) {
         }
 
     return newImage;
-}
+}*/
 
 /**
  * Bild Kanten bilden
@@ -280,7 +286,7 @@ Pixel* invertieren(Pixel* image, int width, int height, int maxGray) {
  * @param height height of the image
  * @return new image as flat array of graytones
  */
-Pixel* kantenbildung(Pixel* image, int width, int height) {
+/*Pixel* kantenbildung(Pixel* image, int width, int height) {
     Pixel* newImage = (Pixel*) malloc(width * height * sizeof(Pixel));
 
     for (int y = 0; y < height; y++)
@@ -307,7 +313,7 @@ Pixel* kantenbildung(Pixel* image, int width, int height) {
         }
 
     return newImage;
-}
+}*/
 
 /**
  * Bild schärfen
@@ -317,7 +323,7 @@ Pixel* kantenbildung(Pixel* image, int width, int height) {
  * @param maxGray grau max value
  * @return new image as flat array of graytones
  */
-Pixel* schaerfen(Pixel* image, int width, int height, int maxGray) {
+/*Pixel* schaerfen(Pixel* image, int width, int height, int maxGray) {
     Pixel* newImage = (Pixel*) malloc(width * height * sizeof(Pixel));
 
     for (int y = 0; y < height; y++)
@@ -347,13 +353,13 @@ Pixel* schaerfen(Pixel* image, int width, int height, int maxGray) {
         }
 
     return newImage;
-}
+}*/
 
 /**
  * Aufgabe 7.2
  * Read, edit and then write an image
  */
-void aufgabe_7_2() {
+/*void aufgabe_7_2() {
     string ifs_filename = "dreifach-7-1.pgm"; // Dateiname
     int width, height, maxGray;
     Pixel* image = readPgm(ifs_filename, width, height, maxGray);
@@ -407,7 +413,7 @@ void aufgabe_7_2() {
     }
 
     free(image);
-}
+}*/
 
 //-----------------------------------------------------------------------------
 //  Hauptprogramm
@@ -419,10 +425,10 @@ int main() {
     // Die Welt begrüßen
     cout << "Hello, World!" << endl << endl;
 
-    aufgabe_7_1();
+    aufgabe_1_1();
     cout << endl;
-    aufgabe_7_2();
-    cout << endl;
+    //aufgabe_1_2();
+    //cout << endl;
 
     return 0;
 }
