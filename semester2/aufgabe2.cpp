@@ -70,7 +70,7 @@ void print_feld(int** field, uint rows, uint cols) {
             if (col > 0) cout << " ";
             cout << field[row][col];
         }
-        cout << endl;
+        cout << "\n";
     }
 }
 
