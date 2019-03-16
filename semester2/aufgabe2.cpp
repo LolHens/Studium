@@ -24,6 +24,12 @@ using namespace std;
 
 typedef unsigned int uint;
 
+/**
+ * Feld zufällig mit 0 oder 1 füllen
+ * @param field Zu füllendes Feld
+ * @param rows Anzahl der Zeilen
+ * @param cols Anzahl der Spalten
+ */
 void zufallsbelegung(int** field, uint rows, uint cols) {
     // Seed für Zufallsgeneator aus aktueller Zeit festlegen
     srand(time(NULL));
@@ -33,6 +39,14 @@ void zufallsbelegung(int** field, uint rows, uint cols) {
             field[row][col] = rand() % 2;
 }
 
+/**
+ * Die nächste Generation des Feldes berechnen
+ * @param field1 Feld für aktuelle Generation
+ * @param field2 Feld für nächste Generation
+ * @param rows Anzahl der Zeilen
+ * @param cols Anzahl der Spalten
+ * @return Anzahl der lebenden Zellen der neuen Generation
+ */
 uint next_generation(int** field1, int** field2, uint rows, uint cols) {
     uint numAlive = 0;
 
@@ -64,6 +78,12 @@ uint next_generation(int** field1, int** field2, uint rows, uint cols) {
     return numAlive;
 }
 
+/**
+ * Feld in Konsole ausgeben
+ * @param field Auszugebenes Feld
+ * @param rows Anzahl der Zeilen
+ * @param cols Anzahl der Spalten
+ */
 void print_feld(int** field, uint rows, uint cols) {
     for (uint row = 0; row < rows; row++) {
         for (uint col = 0; col < cols; col++) {
@@ -74,6 +94,12 @@ void print_feld(int** field, uint rows, uint cols) {
     }
 }
 
+/**
+ * Neue Matrix erstellen
+ * @param rows Anzahl der Zeilen
+ * @param cols Anzahl der Spalten
+ * @return Erstellte Matrix
+ */
 int** new_int_matrix(uint rows, uint cols) {
     int** array = new int* [rows]; // allocate pointer array
     *array = new int[rows * cols](); // allocate and initialize data array
@@ -82,6 +108,10 @@ int** new_int_matrix(uint rows, uint cols) {
     return array;
 }
 
+/**
+ * Matrix freigeben
+ * @param array Matrix
+ */
 void delete_int_matrix(int** array) {
     delete[] *array; // delete data array
     delete[] array; // delete pointer array
