@@ -85,13 +85,17 @@ uint next_generation(int** field1, int** field2, uint rows, uint cols) {
  * @param cols Anzahl der Spalten
  */
 void print_feld(int** field, uint rows, uint cols) {
+    char* feldAusgabe = new char[(cols * 2) * rows + 1];
+    unsigned int i = 0;
     for (uint row = 0; row < rows; row++) {
         for (uint col = 0; col < cols; col++) {
-            if (col > 0) cout << " ";
-            cout << field[row][col];
+            if (col > 0) feldAusgabe[i++] = ' ';
+            feldAusgabe[i++] = field[row][col] ? '#' : ' ';
         }
-        cout << "\n";
+        feldAusgabe[i++] = '\n';
     }
+    feldAusgabe[i] = '\0';
+    cout << feldAusgabe;
 }
 
 /**
@@ -123,7 +127,7 @@ void delete_int_matrix(int** array) {
  * Game of life
  */
 void aufgabe_2_1() {
-    uint rows = 20;
+    uint rows = 28;
     uint cols = 60;
     int** matrix = new_int_matrix(rows, cols);
     zufallsbelegung(matrix, rows, cols);
